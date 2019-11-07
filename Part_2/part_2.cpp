@@ -58,7 +58,6 @@ string readFile(string fileName) {
 	const char *filename = fileName.c_str();
 	FILE *file = fopen(filename, "rb");
 	
-	cout << "hi" << endl;
 	if(file){
 		string contents;
 		fseek(file, 0, SEEK_END);
