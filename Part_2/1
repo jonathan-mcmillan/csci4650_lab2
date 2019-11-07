@@ -13,7 +13,8 @@
 
 #include <iostream>
 #include <string>
-#include <cstdio>
+#include <fstream>
+#include <streambuf>
 #include <cerrno>
 
 using namespace std;
@@ -54,19 +55,9 @@ int main(int argc, char *argv[]) {
 }
 
 string readFile(string fileName) {
-	//file reading https://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
-	const char *filename = fileName.c_str();
-	FILE *file = fopen(filename, "rb");
-	
-	cout << "hi" << endl;
-	if(file){
-		string contents;
-		fseek(file, 0, SEEK_END);
-		contents.resize(ftell(file));
-		rewind(file);
-		fread(&contents[0], 1, contents.size(), file);
-		fclose(file);
-		return(contents);
-	}
-	throw(errno);
+	std::ifstream in(filename, std::ios::in | std::ios::binary);
+  	if (in){
+    		return(std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()));
+  	}
+  	throw(errno);
 }
