@@ -15,6 +15,7 @@
 #include <string>
 #include <cstdio>
 #include <cerrno>
+#include <openssl>
 
 using namespace std;
 
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
     string thirdPartyPublicKey = readFile(thirdPartyPublicKeyFN);
     cout << "Third-Party Public Key: " << thirdPartyPublicKey << endl;
 
-    string yourPrivateKey = readFile(thirdPartyPublicKeyFN);
+    string yourPrivateKey = readFile(yourPrivateKeyFN);
     cout << "Your Private Key: " << yourPrivateKey << endl;
 
     return 0;
