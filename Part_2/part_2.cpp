@@ -15,6 +15,7 @@
 #include <string>
 #include <cstdio>
 #include <cerrno>
+#include <openssl>
 
 using namespace std;
 
@@ -25,12 +26,12 @@ string readFile(string fileName);
 int main(int argc, char *argv[]) {
     string plaintextMessageFN, encryptedSessionKeyFN, thirdPartyPublicKeyFN, yourPrivateKeyFN;
     if(argc != 5) {
-        cout << "Usage: part2 <plaintext_message.txt> <encrypted_session_key.pem> <third-party_public_key.pem> <your_private_key.pem>" << endl << "Incorrect number of parameters entered, using default file name values instead." << endl;
+        cout << "Usage: part2 <plaintext_message.txt> <encrypted_session.key> <third-party_public_key.pem> <your_private_key.pem>" << endl << "Incorrect number of parameters entered, using default file name values instead." << endl;
         
         plaintextMessageFN = "plaintext_message.txt";
-        encryptedSessionKeyFN = "encrypted_session_key.pem";
-        thirdPartyPublicKeyFN = "thrid-party_public_key.pem";
-        yourPrivateKeyFN = "your_private_key.pem";
+        encryptedSessionKeyFN = "encrypted_session.key";
+        thirdPartyPublicKeyFN = "pubkey.pem";
+        yourPrivateKeyFN = "oliver_privkey.pem";
     } else {
         plaintextMessageFN = argv[1];
         encryptedSessionKeyFN = argv[2];
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
     string thirdPartyPublicKey = readFile(thirdPartyPublicKeyFN);
     cout << "Third-Party Public Key: " << thirdPartyPublicKey << endl;
 
-    string yourPrivateKey = readFile(thirdPartyPublicKeyFN);
+    string yourPrivateKey = readFile(yourPrivateKeyFN);
     cout << "Your Private Key: " << yourPrivateKey << endl;
 
     return 0;
