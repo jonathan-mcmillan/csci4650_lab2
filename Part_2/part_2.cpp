@@ -15,7 +15,7 @@
 #include <string>
 #include <cstdio>
 #include <cerrno>
-#include <openssl>
+#include <openssl/evp.h>
 
 using namespace std;
 
