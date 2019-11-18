@@ -21,6 +21,7 @@ Links for ducmentation:
 http://www.linuxfromscratch.org/blfs/view/8.0/postlfs/openssl.html
 https://www.openssl.org/docs/man1.0.2/man3/
 
+
 ######Part I
 You will need to obtain a signed certificate from a certificate authority (e.g., CAcert) in thisstep. The CA will issue you a PKCS #12 key package, which will contain your public key,your private key, and the CA’s signature. If you do not want to obtain a certificate from a CA, you may also generate your own self-signed certificate. See the OpenSSL documentationor other online resources for details.
 
