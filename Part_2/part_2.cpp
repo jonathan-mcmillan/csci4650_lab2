@@ -71,31 +71,34 @@ int main(int argc, char *argv[]) {
 		throw(errno);
 	}
 
+	cout << "1" << endl;
 	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pub_key, NULL);
 	if(!ctx){
 		throw(errno);
 	}
+	cout << "2" << endl;
 	if(EVP_PKEY_decrypt_init(ctx) <= 0){
 		throw(errno);
 	}
+	cout << "3" << endl;
 	if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0){
 		throw(errno);
 	}
-
+	cout << "4" << endl;
 	//find buffer length
 	if(EVP_PKEY_decrypt(ctx, NULL, &outlen, in, inlen) <= 0){
 		throw(errno);
 	}
-
+	cout << "5" << endl;
 	out = (unsigned char*) OPENSSL_malloc(outlen);
 
 	if(!out){
 		throw(errno);
 	}
-
+	
 	if (EVP_PKEY_decrypt(ctx, out, &outlen, in, inlen) <= 0){
 		//throw(errno);
-        cout << "unable to decrypt public key..." << endl << &out << endl << *out << endl;
+        cout << "unable to decrypt session key..." << endl << &out << endl << *out << endl;
 	}
 	//at this point decrypted data is in buffer 
 	//end of 2
@@ -111,13 +114,13 @@ int main(int argc, char *argv[]) {
 	//end of 3
 
 	//read private key
-	cout << "priv key" << endl;
+/*	cout << "priv key" << endl;
 	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
 	EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, NULL, NULL);
 	if(priv_key == NULL){
 		throw(errno);
 	}
-
+*/
 	return 0;
 }
 
