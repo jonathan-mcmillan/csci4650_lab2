@@ -7,6 +7,21 @@ The goal of this project is to introduce you to the real-world applications of c
 
 Your programs should validate invalgrindand be free of memory errors. Use of C orC++ is required, and the program must compile and run in the CS department labs. Your code should also be modularized and well-documented(commented).
 
+#####
+OPENSSL version on hopper.slu.edu: 
+OpenSSL 1.0.2k-fips  26 Jan 2017
+built on: reproducible build, date unspecified
+platform: linux-x86_64
+options:  bn(64,64) md2(int) rc4(16x,int) des(idx,cisc,16,int) idea(int) blowfish(idx)
+compiler: gcc -I. -I.. -I../include  -fPIC -DOPENSSL_PIC -DZLIB -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -DKRB5_MIT -m64 -DL_ENDIAN -Wall -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches   -m64 -mtune=generic -Wa,--noexecstack -DPURIFY -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DRC4_ASM -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM -DECP_NISTZ256_ASM
+OPENSSLDIR: "/etc/pki/tls"
+engines:  rdrand dynamic
+
+Links for ducmentation:
+http://www.linuxfromscratch.org/blfs/view/8.0/postlfs/openssl.html
+https://www.openssl.org/docs/man1.0.2/man3/
+
+
 ######Part I
 You will need to obtain a signed certificate from a certificate authority (e.g., CAcert) in thisstep. The CA will issue you a PKCS #12 key package, which will contain your public key,your private key, and the CA’s signature. If you do not want to obtain a certificate from a CA, you may also generate your own self-signed certificate. See the OpenSSL documentationor other online resources for details.
 
