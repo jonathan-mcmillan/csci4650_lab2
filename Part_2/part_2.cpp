@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <cerrno>
 #include <openssl/evp.h>
+#include <openssl/pem.h>
 
 using namespace std;
 
@@ -55,7 +56,15 @@ int main(int argc, char *argv[]) {
 
 	//start of 2 - https://wiki.openssl.org/index.php/EVP_Asymmetric_Encryption_and_Decryption_of_an_Envelope
 	//there is a section called opening and envelope which should help with this
-		
+	
+	//read private key
+	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
+	EVP_PKEY *priv_key = 0;
+	PEM_read_PrivateKey(priv, &priv_key, 0, 0);
+	if(priv_key == NULL){
+		throw(errno);
+	}
+
 	return 0;
 }
 
