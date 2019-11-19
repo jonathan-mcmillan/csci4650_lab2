@@ -20,12 +20,12 @@
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
 #include <openssl/crypto.h>
+#include <openssl/engine.h>
 
 using namespace std;
 
 string readFile(string fileName);
 //Takes a string fileName indicating the location of a file to be read and returns a string of the contents
-
 
 int main(int argc, char *argv[]) {
     	//start of 1
@@ -59,7 +59,8 @@ int main(int argc, char *argv[]) {
 	//start of 2 - https://wiki.openssl.org/index.php/EVP_Asymmetric_Encryption_and_Decryption_of_an_Envelope
 	//there is a section called opening and envelope which should help with this
 	//https://www.openssl.org/docs/man1.0.2/man3/EVP_PKEY_decrypt.html
-	
+
+	ENGINE *eng;	
 	unsigned char *out, *in;
 	size_t outlen, inlen; 
 	
@@ -72,12 +73,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	cout << "1" << endl;
-	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pub_key, NULL);
+	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pub_key, eng);
 	if(!ctx){
 		throw(errno);
 	}
 	cout << "2" << endl;
-	if(EVP_PKEY_decrypt_init(ctx) <= 0){
+	if(EVP_PKEY_encrypt_init(ctx) <= 0){
 		throw(errno);
 	}
 	cout << "3" << endl;
@@ -86,7 +87,7 @@ int main(int argc, char *argv[]) {
 	}
 	cout << "4" << endl;
 	//find buffer length
-	if(EVP_PKEY_decrypt(ctx, NULL, &outlen, in, inlen) <= 0){
+	if(EVP_PKEY_encrypt(ctx, NULL, &outlen, in, inlen) <= 0){
 		throw(errno);
 	}
 	cout << "5" << endl;
@@ -96,9 +97,9 @@ int main(int argc, char *argv[]) {
 		throw(errno);
 	}
 	
-	if (EVP_PKEY_decrypt(ctx, out, &outlen, in, inlen) <= 0){
+	if (EVP_PKEY_encrypt(ctx, out, &outlen, in, inlen) <= 0){
 		//throw(errno);
-        cout << "unable to decrypt session key..." << endl << &out << endl << *out << endl;
+        cout << "unable to decrypt session key..." << endl << &out << endl << out << endl;
 	}
 	//at this point decrypted data is in buffer 
 	//end of 2
