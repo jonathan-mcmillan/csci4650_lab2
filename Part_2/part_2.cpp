@@ -12,6 +12,7 @@
 */
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <cstdio>
 #include <cerrno>
@@ -103,13 +104,16 @@ int main(int argc, char *argv[]) {
 	}
 	//at this point decrypted data is in buffer 
 	//end of 2
-		
+	
+	string de_ses((char*) out);
+	cout << de_ses << endl;
+
 	//start of 3
 	//write buffer to a file
 	//http://www.cplusplus.com/reference/cstdio/fwrite/
-	FILE *pFile = fopen("decrypted_session.txt", "w");
-	fwrite(out, sizeof(char), outlen, pFile);
-	fclose(pFile);
+	ofstream out_f("decrypted_session.txt");
+	out_f << de_ses;
+	out_f.close();
 
 	//at this point buffer should be written to "decrypted_session.txt"
 	//end of 3
