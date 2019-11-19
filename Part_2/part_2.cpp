@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 	}
 	cout << "4" << endl;
 	//find buffer length
-	if(EVP_PKEY_encrypt(ctx, NULL, &outlen, in, inlen) <= 0){
+	if(EVP_PKEY_encrypt(ctx, NULL, &outlen, (const unsigned char *) encryptedSessionKey.c_str(), encryptedSessionKey.size()) <= 0){
 		throw(errno);
 	}
 	cout << "5" << endl;
@@ -98,9 +98,9 @@ int main(int argc, char *argv[]) {
 		throw(errno);
 	}
 	
-	if (EVP_PKEY_encrypt(ctx, out, &outlen, in, inlen) <= 0){
+	if (EVP_PKEY_encrypt(ctx, out, &outlen, (const unsigned char *) encryptedSessionKey.c_str(), encryptedSessionKey.size()) <= 0){
 		//throw(errno);
-        cout << "unable to decrypt session key..." << endl << &out << endl << out << endl;
+        	cout << "unable to decrypt session key..." << endl << &out << endl << out << endl;
 	}
 	//at this point decrypted data is in buffer 
 	//end of 2
@@ -117,9 +117,47 @@ int main(int argc, char *argv[]) {
 
 	//at this point buffer should be written to "decrypted_session.txt"
 	//end of 3
-
+/*
 	//start of 4
-	
+	ENGINE *eng_en;
+        unsigned char *out_en, *in_en;
+        size_t outlen_en, inlen_en;
+	//FILE *ses = fopen("decrypted_session.txt".c_str(), "rb");
+	EVP_PKEY *ses_key = de_ses;//PEM_read_PUBKEY(ses, NULL, NULL, NULL);
+        if(ses_key == NULL){
+                throw(errno);
+        }
+
+        cout << "1" << endl;
+        EVP_PKEY_CTX *ctx_en = EVP_PKEY_CTX_new(ses_key, eng_en);
+        if(!ctx_en){
+                throw(errno);
+        }
+        cout << "2" << endl;
+        if(EVP_PKEY_encrypt_init(ctx_en) <= 0){
+                throw(errno);
+        }
+        cout << "3" << endl;
+        if(EVP_PKEY_CTX_set_rsa_padding(ctx_en, RSA_PKCS1_OAEP_PADDING) <= 0){
+                throw(errno);
+        }
+        cout << "4" << endl;
+        //find buffer length
+        if(EVP_PKEY_encrypt(ctx_en, NULL, &outlen_en, in_en, inlen_en) <= 0){
+        	throw(errno);
+	}
+        cout << "5" << endl;
+        out_en = (unsigned char*) OPENSSL_malloc(outlen_en);
+        
+	if(!out_en){
+        	throw(errno);
+        }
+
+        if (EVP_PKEY_encrypt(ctx_en, out_en, &outlen_en, in_en, inlen_en) <= 0){
+        	throw(errno);
+		cout << "unable to encrypt plaintext..." << endl << &out_en << endl << out_en << endl;
+        }
+*/
 	//read private key
 /*	cout << "priv key" << endl;
 	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
