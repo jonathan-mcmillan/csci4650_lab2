@@ -78,9 +78,9 @@ int main(int argc, char *argv[]) {
 	if(EVP_PKEY_decrypt_init(ctx) <= 0){
 		throw(errno);
 	}
-	/*if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_OAEP_PADDING) <= 0){
+	if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0){
 		throw(errno);
-	}*/
+	}
 
 	//find buffer length
 	if(EVP_PKEY_decrypt(ctx, NULL, &outlen, in, inlen) <= 0){
