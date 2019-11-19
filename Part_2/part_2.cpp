@@ -15,8 +15,11 @@
 #include <string>
 #include <cstdio>
 #include <cerrno>
+#include <stdio.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
+#include <openssl/rsa.h>
+#include <openssl/crypto.h>
 
 using namespace std;
 
@@ -55,6 +58,10 @@ int main(int argc, char *argv[]) {
 
 	//start of 2 - https://wiki.openssl.org/index.php/EVP_Asymmetric_Encryption_and_Decryption_of_an_Envelope
 	//there is a section called opening and envelope which should help with this
+	//https://www.openssl.org/docs/man1.0.2/man3/EVP_PKEY_decrypt.html
+	
+	unsigned char *out, *in;
+	size_t outlen, inlen; 
 	
 	//read public key 
 	cout << "pub key" << endl;
@@ -64,6 +71,46 @@ int main(int argc, char *argv[]) {
 		throw(errno);
 	}
 
+	EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(pub_key, NULL);
+	if(!ctx){
+		throw(errno);
+	}
+	if(EVP_PKEY_decrypt_init(ctx) <= 0){
+		throw(errno);
+	}
+/*	if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_OAEP_PADDING) <= 0){
+		throw(errno);
+	}
+*/
+	//find buffer length
+	if(EVP_PKEY_decrypt(ctx, NULL, &outlen, in, inlen) <= 0){
+		throw(errno);
+	}
+
+	out = OPENSSL_malloc(outlen);
+
+	if(!out){
+		throw(errno);
+	}
+	
+	if (EVP_PKEY_decrypt(ctx, out, &outlen, in, inlen) <= 0){
+		throw(errno);
+	}
+	//at this point decrypted data is in buffer 
+	//end of 2
+	
+	//start of 3
+	//write buffer to a file
+	//http://www.cplusplus.com/reference/cstdio/fwrite/
+	FILE *pFile = fopen("decrypted_session.txt", "w");
+	fwrite(out, sizeof(char), outlen, pFile);
+	fclose(pFile);
+
+	//at this point buffer should be written to "decrypted_session.txt"
+	//end of 3
+	
+	
+	
 	//read private key
 	cout << "priv key" << endl;
 	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
