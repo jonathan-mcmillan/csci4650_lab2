@@ -40,16 +40,16 @@ int main(int argc, char *argv[]) {
     }
 
     string plaintextMessage = readFile(plaintextMessageFN);
-    cout << "Plaintext Message: " << plaintextMessage << endl;
+    cout << "Plaintext Message: " << endl << plaintextMessage << endl;
 
     string encryptedSessionKey = readFile(encryptedSessionKeyFN);
-    cout << "Encrypted Session Key: " << encryptedSessionKey << endl; 
+    cout << "Encrypted Session Key: " << endl << encryptedSessionKey << endl; 
 
     string thirdPartyPublicKey = readFile(thirdPartyPublicKeyFN);
-    cout << "Third-Party Public Key: " << thirdPartyPublicKey << endl;
+    cout << "Third-Party Public Key: " << endl << thirdPartyPublicKey << endl;
 
     string yourPrivateKey = readFile(yourPrivateKeyFN);
-    cout << "Your Private Key: " << yourPrivateKey << endl;
+    cout << "Your Private Key: " << endl << yourPrivateKey << endl;
 
     return 0;
 }
