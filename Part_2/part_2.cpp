@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 	}
 	//at this point decrypted data is in buffer 
 	//end of 2
-	
+		
 	//start of 3
 	//write buffer to a file
 	//http://www.cplusplus.com/reference/cstdio/fwrite/
@@ -114,6 +114,8 @@ int main(int argc, char *argv[]) {
 	//at this point buffer should be written to "decrypted_session.txt"
 	//end of 3
 
+	//start of 4
+	
 	//read private key
 /*	cout << "priv key" << endl;
 	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
