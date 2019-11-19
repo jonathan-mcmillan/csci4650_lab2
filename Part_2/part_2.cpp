@@ -78,23 +78,24 @@ int main(int argc, char *argv[]) {
 	if(EVP_PKEY_decrypt_init(ctx) <= 0){
 		throw(errno);
 	}
-	if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_OAEP_PADDING) <= 0){
+	/*if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_OAEP_PADDING) <= 0){
 		throw(errno);
-	}
+	}*/
 
 	//find buffer length
 	if(EVP_PKEY_decrypt(ctx, NULL, &outlen, in, inlen) <= 0){
 		throw(errno);
 	}
 
-	out = OPENSSL_malloc(outlen);
+	out = (unsigned char*) OPENSSL_malloc(outlen);
 
 	if(!out){
 		throw(errno);
 	}
-	
+
 	if (EVP_PKEY_decrypt(ctx, out, &outlen, in, inlen) <= 0){
-		throw(errno);
+		//throw(errno);
+        cout << "unable to decrypt public key..." << endl << &out << endl << *out << endl;
 	}
 	//at this point decrypted data is in buffer 
 	//end of 2
