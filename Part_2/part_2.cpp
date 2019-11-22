@@ -17,6 +17,7 @@
 #include <cstdio>
 #include <cerrno>
 #include <stdio.h>
+#include <string.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
@@ -65,6 +66,9 @@ int main(int argc, char *argv[]) {
 	unsigned char *out, *in;
 	size_t outlen, inlen; 
 	
+	//in =(unsigned char *) encryptedSessionKey.c_str();
+	//inlen = strlen(encryptedSessionKey.c_str());
+
 	//read public key 
 	cout << "pub key" << endl;
 	FILE *pub = fopen(thirdPartyPublicKeyFN.c_str(), "rb");
@@ -86,9 +90,13 @@ int main(int argc, char *argv[]) {
 	if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0){
 		throw(errno);
 	}
+	
+	in =(unsigned char *) encryptedSessionKey.c_str();
+        inlen = strlen(encryptedSessionKey.c_str());
+	
 	cout << "4" << endl;
 	//find buffer length
-	if(EVP_PKEY_encrypt(ctx, NULL, &outlen, (const unsigned char *) encryptedSessionKey.c_str(), encryptedSessionKey.size()) <= 0){
+	if(EVP_PKEY_encrypt(ctx, NULL, &outlen, in, inlen) <= 0){
 		throw(errno);
 	}
 	cout << "5" << endl;
@@ -98,7 +106,7 @@ int main(int argc, char *argv[]) {
 		throw(errno);
 	}
 	
-	if (EVP_PKEY_encrypt(ctx, out, &outlen, (const unsigned char *) encryptedSessionKey.c_str(), encryptedSessionKey.size()) <= 0){
+	if (EVP_PKEY_encrypt(ctx, out, &outlen, in, inlen) <= 0){
 		//throw(errno);
         	cout << "unable to decrypt session key..." << endl << &out << endl << out << endl;
 	}
