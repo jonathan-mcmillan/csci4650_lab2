@@ -62,13 +62,10 @@ int main(int argc, char *argv[]) {
 	//there is a section called opening and envelope which should help with this
 	//https://www.openssl.org/docs/man1.0.2/man3/EVP_PKEY_decrypt.html
 
-	ENGINE *eng;	
+	ENGINE *eng = ENGINE_get_default_RSA();	
 	unsigned char *out, *in;
 	size_t outlen, inlen; 
 	
-	//in =(unsigned char *) encryptedSessionKey.c_str();
-	//inlen = strlen(encryptedSessionKey.c_str());
-
 	//read public key 
 	cout << "pub key" << endl;
 	FILE *pub = fopen(thirdPartyPublicKeyFN.c_str(), "rb");
@@ -113,7 +110,7 @@ int main(int argc, char *argv[]) {
 	//at this point decrypted data is in buffer 
 	//end of 2
 	
-	string de_ses((char*) out);
+	string de_ses((char *) out);
 	cout << de_ses << endl;
 
 	//start of 3
