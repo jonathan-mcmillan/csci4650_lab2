@@ -4,10 +4,10 @@
 // Programming Assignment 2 - Part 2
 
 /*
-1. Take the ﬁlenames of the plaintext message, the encrypted session key, the third-party public key, and your private key as command-line parameters. 
-2. Use the third-party public key to decrypt the session key. 
-3. Save the plaintext session key to a text ﬁle. 
-4. Use the DES session key to encrypt the plaintext. 
+1. Take the ﬁlenames of the plaintext message, the encrypted session key, the third-party public key, and your private key as command-line parameters.
+2. Use the third-party public key to decrypt the session key.
+3. Save the plaintext session key to a text ﬁle.
+4. Use the DES session key to encrypt the plaintext.
 5. Use your private key to sign the encrypted message. 6. Save the ciphertext and signature to an output ﬁle (or separate output ﬁles).
 */
 
@@ -26,6 +26,7 @@
 #include <openssl/des.h>
 #include <openssl/conf.h>
 #include <openssl/err.h>
+#include <openssl/ssl.h> // to set default password
 
 using namespace std;
 
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]) {
 	string plaintextMessageFN, encryptedSessionKeyFN, thirdPartyPublicKeyFN, yourPrivateKeyFN;
 	if(argc != 5) {
 		cout << "Usage: part2 <plaintext_message.txt> <encrypted_session.key> <third-party_public_key.pem> <your_private_key.pem>" << endl << "Incorrect number of parameters entered, using default file name values instead." << endl;
-	
+
 		plaintextMessageFN = "plaintext_message.txt";
 		encryptedSessionKeyFN = "encrypted_session.key";
 		thirdPartyPublicKeyFN = "pubkey.pem";
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]) {
 	cout << "Plaintext Message: " << endl << plaintextMessage << endl;
 
 	string encryptedSessionKey = readFile(encryptedSessionKeyFN);
-	cout << "Encrypted Session Key: " << endl << encryptedSessionKey << endl; 
+	cout << "Encrypted Session Key: " << endl << encryptedSessionKey << endl;
 
 	string thirdPartyPublicKey = readFile(thirdPartyPublicKeyFN);
 	cout << "Third-Party Public Key: " << endl << thirdPartyPublicKey << endl;
@@ -77,11 +78,11 @@ int main(int argc, char *argv[]) {
 	//there is a section called opening and envelope which should help with this
 	//https://www.openssl.org/docs/man1.0.2/man3/EVP_PKEY_encrypt.html
 
-	ENGINE *eng = ENGINE_get_default_RSA();	
+	ENGINE *eng = ENGINE_get_default_RSA();
 	unsigned char *out, *in;
-	size_t outlen, inlen; 
-	
-	//read public key 
+	size_t outlen, inlen;
+
+	//read public key
 	cout << "pub key" << endl;
 	FILE *pub = fopen(thirdPartyPublicKeyFN.c_str(), "rb");
 	EVP_PKEY *pub_key = PEM_read_PUBKEY(pub, NULL, NULL, NULL);
@@ -101,10 +102,10 @@ int main(int argc, char *argv[]) {
 	if(EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0){
 		throw(errno);
 	}
-	
+
 	in =(unsigned char *) encryptedSessionKey.c_str();
     	inlen = strlen(encryptedSessionKey.c_str());
-	
+
 	if(EVP_PKEY_encrypt_init(ctx) <= 0){
 		throw(errno);
 	}
@@ -119,14 +120,14 @@ int main(int argc, char *argv[]) {
 	if(!out){
 		throw(errno);
 	}
-	 
+
 	if (EVP_PKEY_encrypt(ctx, out, &outlen, in, inlen) <= 0){
 		//throw(errno);
         cout << "unable to decrypt session key..." << endl << &out << endl << out << endl;
 	}
 	//at this point decrypted data is in buffer -- assume this is right for now
 	//end of 2
-	
+
 	string de_ses((char *) out);
 	cout << hex << de_ses << endl;
 
@@ -171,18 +172,20 @@ int main(int argc, char *argv[]) {
 
 	EVP_MD_CTX *mdctx = NULL;
 	size_t *slen;
-	unsigned char *sig; 
-	
+	unsigned char *sig;
+
 	/* Create the Message Digest Context */
 	if(!(mdctx = EVP_MD_CTX_create())) handleErrors();
-	
+
 	/* Open the private key */
 	cout << endl << "Opening Private Key: " << endl;
 	char* password = (char *) "password";
 	char* pwd_buf[8];
-	//int ppc = pem_password_cb(pwd_buf, 8, 1, password); 
+	//int ppc = pem_password_cb(pwd_buf, 8, 1, password);
 	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
-	EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, *pem_password_cb, NULL);
+	//EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, *pem_password_cb, NULL);
+	SSL_CTX_set_default_passwd_cb_userdata(mdctx, password)
+	EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, NULL, NULL);
 	if(pub_key == NULL){
 		throw(errno);
 	}
@@ -195,7 +198,7 @@ int main(int argc, char *argv[]) {
 	/* Call update with the message */
 	cout << "Adding message to cipher context..." << endl;
 	if(1 != EVP_DigestSignUpdate(mdctx, ciphertext, ciphertext_len)) handleErrors();;
-	
+
 	/* Finalise the DigestSign operation */
 	/* First call EVP_DigestSignFinal with a NULL sig parameter to obtain the length of the * signature. Length is returned in slen */
 	cout << "Finding signature length..." << endl;
@@ -208,7 +211,7 @@ int main(int argc, char *argv[]) {
 	/* Obtain the signature */
 	cout << "Finalizing DigestSign and storing signature into memory..." << endl;
 	if(1 != EVP_DigestSignFinal(mdctx, sig, slen)) handleErrors();;
-	
+
 	// 6. Save signature into output file
 	cout << "Saving Signature: " << endl;
 	std::ofstream ofs;
@@ -315,11 +318,11 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
     return plaintext_len;
 }
 
-int pem_passwd_cb(char *buf, int size, int rwflag, void *password) 
-{ 
-	strncpy(buf, (char *)password, size); 
-	buf[size - 1] = '\0'; 
-	return strlen(buf); 
+int pem_passwd_cb(char *buf, int size, int rwflag, void *password)
+{
+	strncpy(buf, (char *)password, size);
+	buf[size - 1] = '\0';
+	return strlen(buf);
 }
 
 void handleErrors(void)
@@ -332,7 +335,7 @@ string readFile(string fileName) {
 	//file reading https://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
 	const char *filename = fileName.c_str();
 	FILE *file = fopen(filename, "rb");
-	
+
 	if(file){
 		string contents;
 		fseek(file, 0, SEEK_END);
