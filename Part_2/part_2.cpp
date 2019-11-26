@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	in =(unsigned char *) encryptedSessionKey.c_str();
-    inlen = strlen(encryptedSessionKey.c_str());
+    	inlen = strlen(encryptedSessionKey.c_str());
 	
 	if(EVP_PKEY_encrypt_init(ctx) <= 0){
 		throw(errno);
