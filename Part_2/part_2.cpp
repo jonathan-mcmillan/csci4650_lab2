@@ -33,6 +33,10 @@ int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key, uns
 //Encrypts a plaintext buffer in a buffer using DES
 
 int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *iv, unsigned char *plaintext);
+//Decrypts a ciphertext buffer using DES
+
+int pem_passwd_cb(char *buf, int size, int rwflag, void *password);
+//Need this because a function needs a function pointer
 
 void handleErrors(void);
 //Prints errors to stdout
@@ -174,8 +178,11 @@ int main(int argc, char *argv[]) {
 	
 	/* Open the private key */
 	cout << endl << "Opening Private Key: " << endl;
+	char* password = (char *) "password";
+	char* pwd_buf[8];
+	//int ppc = pem_password_cb(pwd_buf, 8, 1, password); 
 	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
-	EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, "password", NULL);
+	EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, *pem_password_cb, NULL);
 	if(pub_key == NULL){
 		throw(errno);
 	}
@@ -306,6 +313,13 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
     EVP_CIPHER_CTX_free(ctx);
 
     return plaintext_len;
+}
+
+int pem_passwd_cb(char *buf, int size, int rwflag, void *password) 
+{ 
+	strncpy(buf, (char *)password, size); 
+	buf[size - 1] = '\0'; 
+	return strlen(buf); 
 }
 
 void handleErrors(void)
