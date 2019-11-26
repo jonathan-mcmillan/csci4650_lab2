@@ -162,6 +162,58 @@ int main(int argc, char *argv[]) {
 	cout << "Decrypted Text Length: " << decryptedText_len << endl;
 	cout << "Decrypted Text: " << endl << decryptedText << endl;
 
+	// 5. Use private key to sign the encrypted message
+	//https://wiki.openssl.org/index.php/EVP_Signing_and_Verifying
+
+	EVP_MD_CTX *mdctx = NULL;
+	size_t *slen;
+	unsigned char *sig; 
+	
+	/* Create the Message Digest Context */
+	if(!(mdctx = EVP_MD_CTX_create())) handleErrors();
+	
+	/* Open the private key */
+	cout << endl << "Opening Private Key: " << endl;
+	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
+	EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, "password", NULL);
+	if(pub_key == NULL){
+		throw(errno);
+	}
+	cout << readFile(yourPrivateKeyFN) << endl;
+
+	/* Initialise the DigestSign operation - SHA-256 has been selected as the message digest function in this example */
+	cout << "Initializing DigestSign..." << endl;
+	if(1 != EVP_DigestSignInit(mdctx, NULL, EVP_sha256(), NULL, priv_key)) handleErrors();;
+
+	/* Call update with the message */
+	cout << "Adding message to cipher context..." << endl;
+	if(1 != EVP_DigestSignUpdate(mdctx, ciphertext, ciphertext_len)) handleErrors();;
+	
+	/* Finalise the DigestSign operation */
+	/* First call EVP_DigestSignFinal with a NULL sig parameter to obtain the length of the * signature. Length is returned in slen */
+	cout << "Finding signature length..." << endl;
+	if(1 != EVP_DigestSignFinal(mdctx, NULL, slen)) handleErrors();;
+
+	/* Allocate memory for the signature based on size in slen */
+	cout << "Allocating memory for signature..." << endl;
+	if(!(sig = (unsigned char *) OPENSSL_malloc(sizeof(unsigned char) * (*slen)))) handleErrors();;
+
+	/* Obtain the signature */
+	cout << "Finalizing DigestSign and storing signature into memory..." << endl;
+	if(1 != EVP_DigestSignFinal(mdctx, sig, slen)) handleErrors();;
+	
+	// 6. Save signature into output file
+	cout << "Saving Signature: " << endl;
+	std::ofstream ofs;
+	ofs.open ("signature.txt", std::ofstream::out | std::ofstream::app);
+  	ofs << (char*) sig;
+  	ofs.close();
+	cout << (char*) sig << endl;
+
+	/* Clean up */
+	if(sig) OPENSSL_free(sig);
+	if(mdctx) EVP_MD_CTX_destroy(mdctx);
+
 	return 0;
 }
 
