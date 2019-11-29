@@ -26,7 +26,6 @@
 #include <openssl/des.h>
 #include <openssl/conf.h>
 #include <openssl/err.h>
-#include <openssl/ssl.h> // to set default password
 
 using namespace std;
 
@@ -54,7 +53,7 @@ int main(int argc, char *argv[]) {
 		plaintextMessageFN = "plaintext_message.txt";
 		encryptedSessionKeyFN = "encrypted_session.key";
 		thirdPartyPublicKeyFN = "pubkey.pem";
-		yourPrivateKeyFN = "oliver_privkey.pem";
+		yourPrivateKeyFN = "jon_private.pem";
 	} else {
 		plaintextMessageFN = argv[1];
 		encryptedSessionKeyFN = argv[2];
@@ -181,11 +180,12 @@ int main(int argc, char *argv[]) {
 	cout << endl << "Opening Private Key: " << endl;
 	char* password = (char *) "password";
 	char* pwd_buf[8];
+		
 	//int ppc = pem_password_cb(pwd_buf, 8, 1, password);
 	FILE *priv = fopen(yourPrivateKeyFN.c_str(), "rb");
-	//EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, *pem_password_cb, NULL);
-	SSL_CTX_set_default_passwd_cb_userdata(mdctx, password)
+
 	EVP_PKEY *priv_key = PEM_read_PrivateKey(priv, NULL, NULL, NULL);
+	
 	if(pub_key == NULL){
 		throw(errno);
 	}
@@ -316,13 +316,6 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
     EVP_CIPHER_CTX_free(ctx);
 
     return plaintext_len;
-}
-
-int pem_passwd_cb(char *buf, int size, int rwflag, void *password)
-{
-	strncpy(buf, (char *)password, size);
-	buf[size - 1] = '\0';
-	return strlen(buf);
 }
 
 void handleErrors(void)
