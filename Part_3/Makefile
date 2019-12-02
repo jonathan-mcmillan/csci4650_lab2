@@ -1,2 +1,2 @@
 all:
-	g++ part_2.cpp -o part_2 -lssl -lcrypto
+	g++ part_3.cpp -o part_3 -lssl -lcrypto
