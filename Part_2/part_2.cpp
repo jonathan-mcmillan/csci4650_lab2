@@ -152,6 +152,10 @@ int main(int argc, char *argv[]) {
 	cout << "Ciphertext (HEX): " << endl;
 	BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
 
+        ofstream ciphertext_f("cipher_text.txt");
+        ciphertext_f << ciphertext;
+        ciphertext_f.close();
+
 	// Decrypt the ciphertext to make sure we did it right
 	unsigned char decryptedText[outlen];
 	int decryptedText_len;
